@@ -9,6 +9,7 @@ var getUserRepos = function(user) {
             if (response.ok) {
                 console.log(response);
                 response.json().then(function(data) {
+                console.log(data);
                 displayRepos(data, user);
                 });
             } else {
@@ -29,6 +30,8 @@ var formSubmitHandler = function(event) {
 
     if(username) {
         getUserRepos(username);
+
+        repoContainerEl.textContent = "";
         nameInputEl.value = "";
     } else {
         alert("Please enter a GitHub username");
@@ -42,7 +45,7 @@ var displayRepos = function(repos, searchTerm) {
         return;
     }
 
-    repoContainerEl.textContent = "";
+    
     repoSearchTerm.textContent = searchTerm;
 
     for (var i = 0; i < repos.length; i++) {

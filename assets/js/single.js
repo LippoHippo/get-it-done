@@ -1,4 +1,19 @@
+var repoNameEl = document.querySelector("#repo-name");
+var limitWarningEl = document.querySelector("#limit-warning");
 var  issueContainerEl = document.querySelector("#issues-container");
+
+var getRepoName = function(){
+    var queryString = document.location.search;
+    var repoName = queryString.split("=")[1];
+    console.log(repoName);
+    if(repoName){
+        repoNameEl.textContent = repoName;
+        getRepoIssues(repoName);
+    } else {
+        document.location.replace("./index.html");
+    }
+    
+};
 
 var getRepoIssues = function(repo) {
     console.log(repo);
@@ -7,11 +22,27 @@ var getRepoIssues = function(repo) {
         if(response.ok){
             response.json().then(function(data) {
                 displayIssues(data);
+
+                if (response.headers.get("Link")) {
+                    displayWarning(repo);
+                }
             });
         } else {
-            alert("There was a problem with your request!");
+            document.location.replace("./index.html");
         }
     });
+};
+
+
+
+var displayWarning = function(repo) {
+    limitWarningEl.textContent = "To see more than 30 issues, visit ";
+    var linkEl = document.createElement("a");
+    linkEl.textContent = "See More Issues on GitHub.com";
+    linkEl.setAttribute("href", "https://github.com/" + repo + "/issues");
+    linkEl.setAttribute("target", "_blank");
+
+    limitWarningEl.appendChild(linkEl);
 };
 
 var displayIssues = function(issues) {
@@ -25,7 +56,8 @@ var displayIssues = function(issues) {
         issueEl.classList = "list-item flex-row justify-space-between align-center";
         issueEl.setAttribute("href", issues[i].html_url);
         issueEl.setAttribute("target", "_blank");
-        issueContainerEl.appendChild(issueEl);
+        
+
         var titleEl = document.createElement("span");
         titleEl.textContent = issues[i].title;
     
@@ -40,7 +72,11 @@ var displayIssues = function(issues) {
         }
     
         issueEl.appendChild(typeEl);
+        issueContainerEl.appendChild(issueEl);
     }
 };
 
-getRepoIssues("facebook/react");
+
+
+
+getRepoName();
